@@ -1,0 +1,35 @@
+__pycache__/
+
+*.pyc
+
+.env
+
+.vscode/
+
+#Clinic Appointment API
+
+This project is a simple Clinic Appointment API built using FastAPI and Docker.
+
+## Laboratory Context
+This project was developed in an offline Windows 11 laboratory environment.
+Python was not installed directly on the computer. The application was executed using Docker 
+and a prebuilt Docker image named clinic-fastapi-base:1.0.
+
+##Features
+ - Create Clinic Appointments
+ - View all Appointments
+ - View one Appointment
+ - Update appointment details
+ - Cancel Appointments
+
+## Technologies used
+ - Python
+ - FastAPI
+ -Docker
+ - Git
+
+
+# How to Run
+docker compuse up --build
+
+Open https://localhost:8000/docs

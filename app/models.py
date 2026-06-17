@@ -16,3 +16,13 @@ class AppointmentUpdate(BaseModel):
     appointment_date: Optional[str] = Field(None, examples=["2026-06-15"])
     appointment_time: Optional[str] = Field(None, examples=["09:30"])
     reason: Optional[str] = Field(None, min_length=3, max_length=255)
+
+class LoginRequest(BaseModel):
+    username: str = Field(..., examples=["admin"])
+    password: str = Field(..., examples=["clinic123"])
+
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str

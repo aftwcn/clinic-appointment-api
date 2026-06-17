@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from secrets import compare_digest
+from secrets import compare_digest, token_hex
 
 from models import AppointmentCreate, AppointmentUpdate, LoginRequest, TokenResponse
 
@@ -15,24 +15,24 @@ security = HTTPBearer()
 appointments = {}
 next_id = 1
 
-VALID_USERNAME = "admin"
-VALID_PASSWORD = "clinic123"
-VALID_TOKEN = "clinic-secret-token"
+from secrets import token_hex
+
+USERS = {
+    "admin": {"password": "clinic123",  "role": "clinic_staff"},
+    "staff": {"password": "staff123",   "role": "clinic_assistant"},
+}
+active_tokens: dict[str, dict] = {}
 
 
 def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
-
-    if not compare_digest(token, VALID_TOKEN):
+    user = active_tokens.get(token)
+    if user is None:
         raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED,
-            detail= "Invalid or expired token"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
         )
-    
-    return {
-        "username": VALID_USERNAME,
-        "role": "clinic_staff"
-    }
+    return user
 
 
 @app.get("/")
@@ -44,29 +44,26 @@ def read_root():
         "docs": "/docs"
     }
 
-@app.post("/login", response_model = TokenResponse)
+@app.post("/login", response_model=TokenResponse)
 def login(login_data: LoginRequest):
-    username_is_valid = compare_digest(login_data.username, VALID_USERNAME)
-    password_is_valid = compare_digest(login_data.password, VALID_PASSWORD)
-
-    if not username_is_valid or not password_is_valid:
+    user = USERS.get(login_data.username)
+    if user is None or not compare_digest(login_data.password, user["password"]):
         raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password"
         )
-    
-    return {
-        "access_token": VALID_TOKEN,
-        "token_type": "bearer"
-    }
+    new_token = token_hex(32)
+    active_tokens[new_token] = {"username": login_data.username, "role": user["role"]}
+    return {"access_token": new_token, "token_type": "bearer"}
+
 
 @app.get("/me")
-def get_current_user(current_user: dict = Depends(verify_token)):
+def read_users_me(current_user: dict = Depends(verify_token)):
     return {
-        "message": "Authenticated user",
-        "user": current_user
+        "username": current_user["username"], 
+        "role": current_user["role"]
+    
     }
-
 
 
 

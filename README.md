@@ -16,3 +16,6 @@ Use these credentials to obtain an access token.
     "username": "admin",
     "password": "clinic123"
   }
+
+### Logout Endpoint
+In this lab, logout is simulated by simply discarding the token on the client side.

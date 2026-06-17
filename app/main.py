@@ -142,6 +142,12 @@ def update_appointment(appointment_id: int, appointment_update: AppointmentUpdat
 
 @app.delete("/appointments/{appointment_id}")
 def cancel_appointment(appointment_id: int, current_user: dict = Depends(verify_token)):
+    if current_user["role"] != "clinic_staff":  # add this
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only clinic staff may cancel appointments"
+        )
+
     if appointment_id not in appointments:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

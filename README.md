@@ -3,8 +3,8 @@
 This API includes a simple authentication mechanism for demonstration purposes.
 
 ### Test Account
-- **Username:** testuser  
-- **Password:** testpass  
+- **Username:** admin  
+- **Password:** clinic123  
 
 Use these credentials to obtain an access token.
 
@@ -13,6 +13,6 @@ Use these credentials to obtain an access token.
 - Request Body:
   ```json
   {
-    "username": "testuser",
-    "password": "testpass"
+    "username": "admin",
+    "password": "clinic123"
   }

@@ -54,7 +54,7 @@ def login(login_data: LoginRequest):
         )
     new_token = token_hex(32)
     active_tokens[new_token] = {"username": login_data.username, "role": user["role"]}
-    return {"access_token": new_token, "token_type": "bearer"}
+    return {"access_token": new_token, "token_type": "bearer", "role": user["role"]}
 
 
 @app.get("/me")
